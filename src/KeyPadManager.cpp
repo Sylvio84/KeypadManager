@@ -6,7 +6,7 @@ EventManager *KeyPadManager::eventManager = nullptr;
 
 KeyPadManager::KeyPadManager(Configuration config, EventManager &eventMgr) : keypad(MyConfig::getValue("KEYS5_PIN"))
 {
-    if (eventManager == nullptr)
+    if (!eventManager)
     {
         eventManager = &eventMgr;
     }
@@ -25,39 +25,24 @@ void KeyPadManager::init()
 
 void KeyPadManager::loop()
 {
-    if (millis() % 100 == 0)
+    static unsigned long lastMillis = 0;
+    unsigned long currentMillis = millis();
+    
+    if (currentMillis - lastMillis >= 100)
     {
+        lastMillis = currentMillis;
         readKeypad();
     }
 }
 
 void KeyPadManager::readKeypad()
 {
+    static const char *eventNames[] = {"X", "L", "R", "U", "D", "S"};
+
     unsigned char key = keypad.getKey();
-    if (key)
+    if (key > 0 && key < sizeof(eventNames) / sizeof(eventNames[0]))
     {
-        String event = "X";
-        if (key == 1)
-        {
-            event = "L";
-        }
-        else if (key == 2)
-        {
-            event = "R";
-        }
-        else if (key == 3)
-        {
-            event = "U";
-        }
-        else if (key == 4)
-        {
-            event = "D";
-        }
-        else if (key == 5)
-        {
-            event = "S";
-        }
-        // Serial.println("Debug KeyPad: " + event);
-        eventManager->triggerEvent("KeyPad", event, {});
+        //Serial.println("Debug KeyPad: " + key);
+        eventManager->triggerEvent("KeyPad", eventNames[key], {});
     }
 }
