@@ -16,7 +16,6 @@ class MyController : public MainController
 private:
     MyConfig *myConfig;
     DHT dht;
-    //ezAnalogKeypad *keypad;
     KeyPadManager keypadManager;
 
 public:
@@ -30,10 +29,7 @@ public:
     void processKey(String key);
 
     void readTemperature();
-
-    //void initKeypad(ezAnalogKeypad &k);
-    //void displayKeypad();
-
+    void displayTime();
 };
 
 #endif

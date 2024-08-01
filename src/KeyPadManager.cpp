@@ -1,8 +1,10 @@
+#include <Arduino.h>
+#include "config.h"
 #include "../include/KeyPadManager.h"
 
 EventManager *KeyPadManager::eventManager = nullptr;
 
-KeyPadManager::KeyPadManager(Configuration config, EventManager &eventMgr) : keypad(config.KEYS5_PIN)
+KeyPadManager::KeyPadManager(Configuration config, EventManager &eventMgr) : keypad(MyConfig::getValue("KEYS5_PIN"))
 {
     if (eventManager == nullptr)
     {
@@ -13,6 +15,7 @@ KeyPadManager::KeyPadManager(Configuration config, EventManager &eventMgr) : key
 void KeyPadManager::init()
 {
     keypad.setNoPressValue(4095);
+    keypad.setDebounceTime(100);
     keypad.registerKey(1, 0);    // Left
     keypad.registerKey(2, 1889); // Right
     keypad.registerKey(3, 446);  // Up
@@ -22,8 +25,7 @@ void KeyPadManager::init()
 
 void KeyPadManager::loop()
 {
-    //every 10ms
-    if (millis() % 10 == 0)
+    if (millis() % 100 == 0)
     {
         readKeypad();
     }
@@ -55,7 +57,7 @@ void KeyPadManager::readKeypad()
         {
             event = "S";
         }
-        //Serial.println("Debug KeyPad: " + event);
+        // Serial.println("Debug KeyPad: " + event);
         eventManager->triggerEvent("KeyPad", event, {});
     }
 }
